@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>主谓一致 · 混合练习</title>
+  <!-- html2pdf CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+      background: #f2f5f9;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      margin: 0;
+      color: #2c3e50;
+      line-height: 1.5;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 650px;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.03);
+      padding: 2rem 1.8rem;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* 首页 */
+    .start-page {
+      text-align: center;
+      padding: 1.5rem 0 0.8rem;
+    }
+
+    .start-page h1 {
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #1e3b5c;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.3px;
+    }
+
+    .start-page .subtitle {
+      font-size: 1.05rem;
+      color: #5e6f82;
+      margin-bottom: 2rem;
+      background: #edf2f9;
+      display: inline-block;
+      padding: 0.4rem 1.4rem;
+      border-radius: 30px;
+      font-weight: 500;
+    }
+
+    .feature-list {
+      text-align: left;
+      margin: 2rem auto 2.2rem;
+      display: inline-block;
+      background: #f8fafd;
+      border-radius: 20px;
+      padding: 1.2rem 1.8rem;
+      border: 1px solid #e9edf4;
+    }
+
+    .feature-list p {
+      font-size: 1rem;
+      margin: 0.5rem 0;
+      color: #334e68;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .feature-list p::before {
+      content: "✨";
+      font-size: 1.1rem;
+    }
+
+    .keyboard-hint {
+      margin-top: 1.2rem;
+      color: #4f7aa6;
+      font-weight: 500;
+      font-size: 0.95rem;
+      background: #eef3fa;
+      padding: 0.4rem 1.2rem;
+      border-radius: 30px;
+      display: inline-block;
+    }
+
+    .btn {
+      background: #4f7aa6;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 1.15rem;
+      padding: 0.9rem 2.2rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 6px 14px rgba(79, 122, 166, 0.25);
+      letter-spacing: 0.3px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: #3b5f84;
+      box-shadow: 0 8px 18px rgba(79, 122, 166, 0.35);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: #4f7aa6;
+      border: 1.5px solid #4f7aa6;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .btn-secondary:hover {
+      background: #f0f5ff;
+    }
+
+    /* 答题页 */
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.6rem;
+      font-weight: 500;
+      color: #546e7a;
+    }
+
+    .progress-badge {
+      background: #eef3fa;
+      padding: 0.35rem 1.2rem;
+      border-radius: 24px;
+      font-size: 0.9rem;
+      color: #2c3e50;
+    }
+
+    .question-card {
+      background: #f9fbfd;
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      margin-bottom: 1.8rem;
+      border: 1px solid #e3eaf2;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .question-text {
+      font-size: 1.25rem;
+      font-weight: 500;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.3rem;
+      color: #1e293b;
+    }
+
+    .answer-input {
+      width: 110px;
+      padding: 0.5rem 0.7rem;
+      font-size: 1.1rem;
+      border: 2px solid #dce3ec;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 500;
+      background: white;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      margin: 0 0.2rem;
+    }
+
+    .answer-input:focus {
+      border-color: #4f7aa6;
+      box-shadow: 0 0 0 3px rgba(79, 122, 166, 0.15);
+    }
+
+    .hint-word {
+      font-weight: 600;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 0.1rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    .submit-area {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .feedback-message {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: 600;
+      font-size: 1rem;
+      min-height: 2rem;
+      transition: all 0.2s;
+    }
+
+    .feedback-correct {
+      color: #1f7b4d;
+      background: #e0f2e2;
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      display: inline-block;
+    }
+
+    /* 弹窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(20, 30, 45, 0.45);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.2s, opacity 0.2s;
+    }
+
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 26px;
+      max-width: 400px;
+      width: 90%;
+      padding: 2rem 1.8rem;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+      text-align: center;
+    }
+
+    .modal-box .icon-wrong {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-box .correct-answer {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #c44536;
+      background: #fff0ee;
+      display: inline-block;
+      padding: 0.2rem 1.2rem;
+      border-radius: 16px;
+      margin: 0.6rem 0;
+    }
+
+    .modal-box .explanation {
+      color: #3e4e5e;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      background: #f7f9fc;
+      padding: 0.8rem;
+      border-radius: 14px;
+      text-align: left;
+    }
+
+    /* 结果页 */
+    .result-page {
+      padding-top: 0.5rem;
+    }
+
+    .result-summary {
+      text-align: center;
+      background: #f2f7fd;
+      border-radius: 22px;
+      padding: 1.5rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .score-circle {
+      font-size: 3.8rem;
+      font-weight: 700;
+      color: #1e3b5c;
+    }
+
+    .weakness-list {
+      background: #fffaf5;
+      border-radius: 18px;
+      padding: 1.2rem;
+      margin: 1.2rem 0;
+      border: 1px solid #f0e2d0;
+    }
+
+    .wrong-item {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+      border-left: 4px solid #e07b6b;
+      font-size: 0.95rem;
+      /* 帮助PDF分页避免内部断裂 */
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .wrong-item .user-answer {
+      color: #b33a2c;
+      font-weight: 600;
+    }
+
+    .wrong-item .correct-highlight {
+      color: #1f7b4d;
+      font-weight: 700;
+    }
+
+    .export-btn {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    hr {
+      border: 0.5px solid #e2e8f0;
+      margin: 1.2rem 0;
+    }
+
+    @media (max-width: 480px) {
+      .app-container {
+        padding: 1.5rem 1rem;
+      }
+      .question-text {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container" id="app">
+    <!-- 首页 -->
+    <div id="startPage" class="page active start-page">
+      <h1>📘 主谓一致</h1>
+      <div class="subtitle">混合练习 · 30题</div>
+      <div class="feature-list">
+        <p>一般现在时 · 第三人称单数</p>
+        <p>一般过去式</p>
+        <p>情态动词</p>
+      </div>
+      <p style="color:#5e6f82; margin-bottom:1.2rem;">用括号内单词的正确形式填空</p>
+      <div class="keyboard-hint">⌨️ 答题时可按回车键提交 / 下一题</div>
+      <div style="margin-top:1.8rem;">
+        <button class="btn" id="startBtn">✨ 开始练习</button>
+      </div>
+    </div>
+
+    <!-- 答题页 -->
+    <div id="quizPage" class="page">
+      <div class="quiz-header">
+        <span class="progress-badge" id="questionCounter">第 1 / 30 题</span>
+        <!-- 不再显示语法考点 -->
+      </div>
+      <div class="question-card" id="questionCard">
+        <div class="question-text" id="questionDisplay"></div>
+      </div>
+      <div class="submit-area">
+        <button class="btn" id="submitAnswerBtn">✓ 提交答案</button>
+      </div>
+      <div class="feedback-message" id="feedbackMessage"></div>
+    </div>
+
+    <!-- 结果页 -->
+    <div id="resultPage" class="page result-page">
+      <h2 style="color:#1e3b5c; text-align:center;">📊 练习报告</h2>
+      <div class="result-summary" id="resultSummary"></div>
+      <div id="wrongListContainer"></div>
+      <div class="weakness-list" id="weaknessArea"></div>
+      <div id="adviceBox" style="background:#f0f6ff; border-radius:16px; padding:1rem; margin:1rem 0;"></div>
+      <div class="export-btn" id="exportBtnContainer">
+        <button class="btn" id="exportPdfBtn">📥 下载报告PDF</button>
+      </div>
+    </div>
+
+    <!-- 错误弹窗 -->
+    <div class="modal-overlay" id="errorModal">
+      <div class="modal-box">
+        <div class="icon-wrong">❌</div>
+        <p style="font-weight:600; margin-bottom:0.3rem;">正确答案</p>
+        <div class="correct-answer" id="modalCorrectAnswer"></div>
+        <div class="explanation" id="modalExplanation"></div>
+        <button class="btn btn-secondary" id="closeModalBtn">继续下一题 (Enter)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- 题库（30题混合编排）----------
+      const questions = [
+        { before: "My grandma ", hint: "drink", rest: " tea every afternoon.", answer: "drinks", explanation: "主语 My grandma 是第三人称单数，一般现在时谓语动词加-s，drink 变形为 drinks。", category: "present-simple" },
+        { before: "We can ", hint: "have", rest: " a picnic in the park tomorrow.", answer: "have", explanation: "can 是情态动词，无论主语单复数，后面必须使用动词原形。", category: "modal-verbs" },
+        { before: "They ", hint: "make", rest: " nice cakes at the party last Saturday.", answer: "made", explanation: "last Saturday 是过去时间标志，make 的不规则过去式为 made。", category: "past-simple" },
+        { before: "The bird ", hint: "sing", rest: " soft songs every early morning.", answer: "sings", explanation: "主语 the bird 属于第三人称单数，一般现在时动词 sing 后加 s。", category: "present-simple" },
+        { before: "You must ", hint: "wash", rest: " your hands before meals.", answer: "wash", explanation: "must 为情态动词，其后实义动词只能用原形 wash。", category: "modal-verbs" },
+        { before: "I ", hint: "watch", rest: " a funny film with my cousin yesterday.", answer: "watched", explanation: "yesterday 表示过去，实义动词 watch 直接加 ed 构成过去式。", category: "past-simple" },
+        { before: "Tom ", hint: "walk", rest: " to the library after school each Tuesday.", answer: "walks", explanation: "人名 Tom 是第三人称单数，一般现在时动词加 s，walk 变为 walks。", category: "present-simple" },
+        { before: "It may ", hint: "be", rest: " cold this weekend, take a coat.", answer: "be", explanation: "may 是情态动词，be 动词需使用原形 be。", category: "modal-verbs" },
+        { before: "The little dog ", hint: "run", rest: " after a ball ten minutes ago.", answer: "ran", explanation: "ten minutes ago 代表过去时间，run 的不规则过去式是 ran。", category: "past-simple" },
+        { before: "This teacher ", hint: "teach", rest: " simple English stories for kids.", answer: "teaches", explanation: "主语 this teacher 为三单主语；teach 以 ch 结尾，第三人称单数加 es。", category: "present-simple" },
+        { before: "She should ", hint: "get", rest: " up at seven for her morning class.", answer: "get", explanation: "should 属于情态动词，后面的实义动词统一用原形。", category: "modal-verbs" },
+        { before: "My parents ", hint: "fly", rest: " to a small village last summer.", answer: "flew", explanation: "last summer 为过去时间，fly 的不规则过去式是 flew。", category: "past-simple" },
+        { before: "The sun ", hint: "shine", rest: " bright every sunny morning.", answer: "shines", explanation: "the sun 是第三人称单数，一般现在时动词 shine 加 s。", category: "present-simple" },
+        { before: "The students can ", hint: "sing", rest: " easy English songs in class.", answer: "sing", explanation: "情态动词 can 不受主语复数影响，动词保持原形 sing。", category: "modal-verbs" },
+        { before: "He ", hint: "be", rest: " late for his music lesson the day before yesterday.", answer: "was", explanation: "the day before yesterday 是过去标志；主语 he 单数，be 动词过去式用 was。", category: "past-simple" },
+        { before: "Lily ", hint: "watch", rest: " cartoons with her little sister every Friday evening.", answer: "watches", explanation: "Lily 是三单主语；watch 以 ch 结尾，第三人称单数变形加 es。", category: "present-simple" },
+        { before: "Everyone must ", hint: "follow", rest: " the classroom rules at school.", answer: "follow", explanation: "must 是情态动词，谓语动词只能使用原形 follow。", category: "modal-verbs" },
+        { before: "We ", hint: "pick", rest: " apples and pears in the garden last autumn.", answer: "picked", explanation: "last autumn 表示过去，实义动词 pick 直接加 ed 变过去式。", category: "past-simple" },
+        { before: "My father ", hint: "ride", rest: " his old bike to work every day.", answer: "rides", explanation: "主语 my father 是第三人称单数，一般现在时 ride 后加 s。", category: "present-simple" },
+        { before: "They will ", hint: "take", rest: " a short trip next holiday.", answer: "take", explanation: "will 是表将来的情态助动词，后面必须搭配动词原形 take。", category: "modal-verbs" },
+        { before: "She ", hint: "finish", rest: " all her homework before dinner last night.", answer: "finished", explanation: "last night 为过去时间标志，finish 末尾加 ed 构成过去式。", category: "past-simple" },
+        { before: "He ", hint: "play", rest: " football with friends every Saturday afternoon.", answer: "plays", explanation: "主语 He 是第三人称单数，一般现在时 play 变形为 plays。", category: "present-simple" },
+        { before: "My young brother can ", hint: "play", rest: " simple piano tunes very well.", answer: "play", explanation: "情态动词 can 后，无论主语是否三单，动词均使用原形 play。", category: "modal-verbs" },
+        { before: "It ", hint: "be", rest: " wet and cold three days ago.", answer: "was", explanation: "three days ago 代表过去；it 作单数主语，be 动词过去式用 was。", category: "past-simple" },
+        { before: "My mum ", hint: "cook", rest: " quick breakfast for our family each morning.", answer: "cooks", explanation: "主语 my mother 属于第三人称单数，cook 后加 s 作谓语。", category: "present-simple" },
+        { before: "She may ", hint: "come", rest: " to my birthday party on Sunday.", answer: "come", explanation: "may 为情态动词，后面的行为动词使用原形 come。", category: "modal-verbs" },
+        { before: "He ", hint: "go", rest: " to the green park with his dog last Sunday.", answer: "went", explanation: "last Sunday 表过去，go 的不规则过去式为 went。", category: "past-simple" },
+        { before: "Tom ", hint: "read", rest: " fun storybooks before he goes to bed.", answer: "reads", explanation: "人名 Tom 是第三人称单数，一般现在时 read 加 s。", category: "present-simple" },
+        { before: "We should ", hint: "listen", rest: " carefully when the teacher speaks.", answer: "listen", explanation: "should 是情态动词，其后谓语动词统一使用原形 listen。", category: "modal-verbs" },
+        { before: "The cat ", hint: "eat", rest: " small fish for its lunch every noon.", answer: "eats", explanation: "主语 the cat 是第三人称单数，一般现在时动词 eat 后加 s。", category: "present-simple" }
+      ];
+
+      // ---------- 全局状态 ----------
+      let currentIndex = 0;
+      let wrongAnswers = [];
+      let isAnswered = false;
+      const totalQuestions = questions.length;
+      let audioCtx = null;
+
+      // DOM元素
+      const startPage = document.getElementById('startPage');
+      const quizPage = document.getElementById('quizPage');
+      const resultPage = document.getElementById('resultPage');
+      const startBtn = document.getElementById('startBtn');
+      const questionCounter = document.getElementById('questionCounter');
+      const questionDisplay = document.getElementById('questionDisplay');
+      const submitBtn = document.getElementById('submitAnswerBtn');
+      const feedbackDiv = document.getElementById('feedbackMessage');
+      const errorModal = document.getElementById('errorModal');
+      const modalCorrectAnswer = document.getElementById('modalCorrectAnswer');
+      const modalExplanation = document.getElementById('modalExplanation');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const resultSummary = document.getElementById('resultSummary');
+      const wrongListContainer = document.getElementById('wrongListContainer');
+      const weaknessArea = document.getElementById('weaknessArea');
+      const adviceBox = document.getElementById('adviceBox');
+      const exportPdfBtn = document.getElementById('exportPdfBtn');
+
+      // ---------- 音效 ----------
+      function initAudio() {
+        if (audioCtx) return;
+        audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+      }
+
+      function playCorrectSound() {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.3);
+      }
+
+      function playWrongSound() {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.4);
+      }
+
+      // ---------- 工具函数 ----------
+      function switchPage(page) {
+        startPage.classList.remove('active');
+        quizPage.classList.remove('active');
+        resultPage.classList.remove('active');
+        page.classList.add('active');
+      }
+
+      function escapeHtml(text) {
+        return String(text).replace(/[&<>"]/g, function(m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          if (m === '"') return '&quot;';
+          return m;
+        });
+      }
+
+      function renderQuestion() {
+        isAnswered = false;
+        const q = questions[currentIndex];
+        const html = `
+          <span>${escapeHtml(q.before)}</span>
+          <input type="text" class="answer-input" id="userAnswerInput" placeholder="填写" autocomplete="off" autocapitalize="none">
+          <span class="hint-word">(${escapeHtml(q.hint)})</span>
+          <span>${escapeHtml(q.rest)}</span>
+        `;
+        questionDisplay.innerHTML = html;
+        questionCounter.textContent = `第 ${currentIndex + 1} / ${totalQuestions} 题`;
+        feedbackDiv.innerHTML = '';
+        submitBtn.disabled = false;
+        const input = document.getElementById('userAnswerInput');
+        if (input) {
+          input.focus();
+        }
+      }
+
+      function checkAnswer() {
+        if (isAnswered) return;
+        const input = document.getElementById('userAnswerInput');
+        if (!input) return;
+        const userAnswer = input.value.trim();
+        if (userAnswer === '') {
+          alert('请输入答案再提交哦～');
+          return;
+        }
+        const q = questions[currentIndex];
+        const correctAns = q.answer;
+        const isCorrect = userAnswer.toLowerCase() === correctAns.toLowerCase();
+
+        if (isCorrect) {
+          isAnswered = true;
+          submitBtn.disabled = true;
+          input.disabled = true;
+          feedbackDiv.innerHTML = '<span class="feedback-correct">✓ 回答正确！</span>';
+          playCorrectSound();
+          setTimeout(() => {
+            nextQuestion();
+          }, 1500);
+        } else {
+          isAnswered = true;
+          submitBtn.disabled = true;
+          input.disabled = true;
+          playWrongSound();
+          wrongAnswers.push({
+            index: currentIndex,
+            userAnswer: userAnswer,
+            correctAnswer: correctAns,
+            explanation: q.explanation,
+            category: q.category,
+            questionText: `${q.before} ____ (${q.hint}) ${q.rest}`
+          });
+          modalCorrectAnswer.textContent = correctAns;
+          modalExplanation.textContent = q.explanation;
+          errorModal.classList.add('active');
+        }
+      }
+
+      function nextQuestion() {
+        errorModal.classList.remove('active');
+        currentIndex++;
+        if (currentIndex < totalQuestions) {
+          renderQuestion();
+        } else {
+          showResult();
+        }
+      }
+
+      function showResult() {
+        switchPage(resultPage);
+        const total = totalQuestions;
+        const wrongCount = wrongAnswers.length;
+        const correctCount = total - wrongCount;
+        const accuracy = ((correctCount / total) * 100).toFixed(1);
+
+        resultSummary.innerHTML = `
+          <div class="score-circle">${accuracy}%</div>
+          <p style="font-size:1.1rem; margin-top:0.3rem;">正确 ${correctCount} / ${total} 题</p>
+          <p style="color:#5e6f82;">错误 ${wrongCount} 题</p>
+          <p style="color:#8899aa; font-size:0.85rem;">练习日期：${new Date().toLocaleDateString('zh-CN', {year:'numeric', month:'long', day:'numeric'})}</p>
+        `;
+
+        if (wrongCount === 0) {
+          wrongListContainer.innerHTML = '<p style="text-align:center; color:#2e7d32; font-weight:500;">🎉 全部正确，太棒了！</p>';
+        } else {
+          let wrongHtml = '<h3 style="margin-bottom:0.8rem;">📝 错题回顾</h3>';
+          wrongAnswers.forEach((w, idx) => {
+            wrongHtml += `
+              <div class="wrong-item">
+                <div><strong>${idx+1}.</strong> ${escapeHtml(w.questionText)}</div>
+                <div>你的答案：<span class="user-answer">${escapeHtml(w.userAnswer)}</span></div>
+                <div>正确答案：<span class="correct-highlight">${escapeHtml(w.correctAnswer)}</span></div>
+                <div style="color:#4a5c6c; margin-top:0.3rem;">💡 ${escapeHtml(w.explanation)}</div>
+              </div>
+            `;
+          });
+          wrongListContainer.innerHTML = wrongHtml;
+        }
+
+        const categoryStats = {
+          'present-simple': { total: 0, wrong: 0, name: '一般现在时·三单' },
+          'past-simple': { total: 0, wrong: 0, name: '一般过去式' },
+          'modal-verbs': { total: 0, wrong: 0, name: '情态动词' }
+        };
+        questions.forEach(q => {
+          if (categoryStats[q.category]) categoryStats[q.category].total++;
+        });
+        wrongAnswers.forEach(w => {
+          if (categoryStats[w.category]) categoryStats[w.category].wrong++;
+        });
+
+        let weaknessHtml = '<h3 style="margin-bottom:0.6rem;">🔍 薄弱考点分析</h3>';
+        let hasWeakness = false;
+        for (let cat in categoryStats) {
+          const stat = categoryStats[cat];
+          if (stat.wrong > 0) {
+            hasWeakness = true;
+            weaknessHtml += `<p style="margin:0.4rem 0;">• <strong>${stat.name}</strong>：错误 ${stat.wrong}/${stat.total} 题</p>`;
+          }
+        }
+        if (!hasWeakness) weaknessHtml += '<p>✅ 所有考点掌握良好！</p>';
+        weaknessArea.innerHTML = weaknessHtml;
+
+        let advice = '';
+        const accNum = parseFloat(accuracy);
+        if (accNum >= 90) advice = '🌟 非常优秀！主谓一致掌握得很扎实，继续保持。';
+        else if (accNum >= 70) advice = '📘 良好，但部分知识点仍有提升空间。建议重点复习上方薄弱考点，并做针对性练习。';
+        else if (accNum >= 50) advice = '📌 需要加强练习。请重新回顾一般现在时三单变化规则、过去式不规则动词表以及情态动词后接原形的用法。';
+        else advice = '📚 基础较薄弱，建议系统复习主谓一致语法规则，多做替换练习，巩固动词形式变化。';
+        adviceBox.innerHTML = `<strong>💬 复习建议：</strong> ${advice}`;
+      }
+
+      // ---------- PDF导出（修复完整显示与分页）----------
+      async function downloadPDF() {
+        const element = document.getElementById('resultPage');
+        const exportContainer = document.getElementById('exportBtnContainer');
+        // 隐藏按钮
+        exportContainer.style.display = 'none';
+        // 确保容器完全可见，高度自适应
+        element.style.overflow = 'visible';
+        element.style.height = 'auto';
+        try {
+          await html2pdf().set({
+            margin: [10, 10, 10, 10],
+            filename: '主谓一致练习报告.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+              scale: 2, 
+              useCORS: true,
+              windowHeight: element.scrollHeight + 200,
+              scrollY: 0
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['css', 'legacy'] }
+          }).from(element).save();
+        } catch (err) {
+          console.error('PDF生成失败', err);
+          alert('PDF生成失败，请重试。');
+        } finally {
+          exportContainer.style.display = '';
+          element.style.overflow = '';
+          element.style.height = '';
+        }
+      }
+
+      // ---------- 全局键盘快捷键 ----------
+      function handleGlobalKey(e) {
+        // 在错误弹窗显示时，按回车关闭弹窗并进入下一题
+        if (errorModal.classList.contains('active') && e.key === 'Enter') {
+          e.preventDefault();
+          closeModalBtn.click();
+          return;
+        }
+        // 在答题页，未禁用输入且无弹窗时，回车触发提交
+        if (quizPage.classList.contains('active') && !errorModal.classList.contains('active') && e.key === 'Enter') {
+          const input = document.getElementById('userAnswerInput');
+          if (input && !input.disabled && document.activeElement !== input) {
+            // 如果焦点不在输入框，也触发提交
+            e.preventDefault();
+            checkAnswer();
+          } else if (input && document.activeElement === input && !isAnswered) {
+            // 输入框内回车默认会触发keypress监听，但这里也保证
+            e.preventDefault();
+            checkAnswer();
+          }
+        }
+      }
+
+      document.addEventListener('keydown', handleGlobalKey);
+
+      // ---------- 事件绑定 ----------
+      startBtn.addEventListener('click', () => {
+        initAudio();
+        currentIndex = 0;
+        wrongAnswers = [];
+        isAnswered = false;
+        switchPage(quizPage);
+        renderQuestion();
+      });
+
+      submitBtn.addEventListener('click', checkAnswer);
+
+      closeModalBtn.addEventListener('click', () => {
+        errorModal.classList.remove('active');
+        nextQuestion();
+      });
+
+      errorModal.addEventListener('click', function(e) {
+        if (e.target === errorModal) {
+          errorModal.classList.remove('active');
+          nextQuestion();
+        }
+      });
+
+      exportPdfBtn.addEventListener('click', downloadPDF);
+    })();
+  </script>
+</body>
+</html>
